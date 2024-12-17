@@ -11,4 +11,4 @@ seaborn>=0.9
 openpyxl>=3.0
 Pillow==10.4.0
 streamlit==1.39.0
-pytesseract=0.3.13
+pytesseract==0.3.13
