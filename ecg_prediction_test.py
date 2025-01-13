@@ -1,5 +1,6 @@
 from typing import Annotated, Literal
 from fastapi import FastAPI, Form, HTTPException, UploadFile, File
+from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 import pandas as pd
@@ -106,7 +107,7 @@ def process_ekg_image(
     else:
         file_location = f"data/{image.filename}"
         with open(file_location, "wb") as f:
-            f.write(await image.read())  # Save the uploaded image to the 'data' directory
+            f.write(image.file.read())  # Save the uploaded image to the 'data' directory
 
     # Load the pre-trained model
     model = load_model('model.hdf5')
