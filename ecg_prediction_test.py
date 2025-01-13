@@ -18,7 +18,7 @@ app = FastAPI(
 It builds on established methods for automated EKG interpretation. For more information, refer to:  
 - **[Automated detection of cardiac arrhythmias using deep neural networks](https://www.sciencedirect.com/science/article/pii/S016926072400049X)**, published in *Computers in Biology and Medicine*.  
 - **[Artificial intelligence-enhanced electrocardiography](https://www.nature.com/articles/s41467-020-15432-4)**, published in *Nature Communications*.""",
-    version="0.0.1",
+    version="1.0.0",
 )
 
 app.add_middleware(
@@ -81,7 +81,7 @@ class EKGFormOutput(BaseModel):
         examples=["/download_processed_image"],
         description="A link to download the processed EKG image.",
     )
-    
+
 @app.post(
     "/process_ekg_image/",
     response_model=EKGFormOutput,
@@ -91,7 +91,7 @@ class EKGFormOutput(BaseModel):
 
 def process_ekg_image(
     data: Annotated[EKGFormInput, Form()],
-    image: UploadFile = File(None),
+    # image: Annotated[UploadFile, File(title="File")],
 ) -> EKGFormOutput:
     """Digitize EKG image, extract signals, and provide predictions for potential diagnoses.
 
@@ -101,6 +101,7 @@ def process_ekg_image(
     Returns:
         EKGFormOutput: prediction on digitized EKG and interpretation
     """
+    image = None
     # If no image is uploaded, use the default 'example.png' from the 'data/' folder
     if not image:
         file_location = "data/example.png"
@@ -127,6 +128,7 @@ def process_ekg_image(
     selected_rhythm = rhythm_map[data.rhythm]
     rp_at_right = data.reference_pulse == "Right"
     cabrera = data.ekg_format == "Cabrera"
+    scaling_factor = data.scaling_factor
 
     # Initialize the Digitizer with dynamic options
     digitizer = Digitizer(
@@ -151,17 +153,18 @@ def process_ekg_image(
 
     # Concatenate slices and scale signals
     data_final = pd.concat([data_I, data_II, data_III, data_aVR_aVF, data_V1_V3, data_V4_V6], axis=1)
-    data_final *= data.scaling_factor  # Apply user-defined scaling factor
+    data_final *= scaling_factor  # Apply user-defined scaling factor
 
     model_input = np.expand_dims(data_final.to_numpy(), axis=0)
     model_input = np.nan_to_num(model_input)
     preds = model.predict(model_input)
 
     output_image_path = "data/processed_ecg.png"
-    if ecg.dtype != np.uint8:
-        ecg = (255 * (ecg / np.max(ecg))).astype(np.uint8)
-    pil_image = Image.fromarray(ecg, mode="L" if len(ecg.shape) == 2 else "RGB")
-    pil_image.save(output_image_path)
+    ecg.save(output_image_path)
+    # if ecg.dtype != np.uint8:
+    #     ecg = (255 * (ecg / np.max(ecg))).astype(np.uint8)
+    # pil_image = Image.fromarray(ecg, mode="L" if len(ecg.shape) == 2 else "RGB")
+    # pil_image.save(output_image_path)
 
     # Display predictions
     predictions = [(labels[i], preds[0][i]) for i in range(len(labels))]
