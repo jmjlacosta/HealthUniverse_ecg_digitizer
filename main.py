@@ -93,7 +93,7 @@ def process_ekg_image(
     reference_pulse: Annotated[str, Form()],
     ekg_format: Annotated[str, Form()],
     force_second_contour: Annotated[bool, Form()],
-    scaling_factor: Annotated[int, Form()],
+    scaling_factor: Annotated[str, Form()],
     image: Annotated[UploadFile, File()],
     request: Request,
 ) -> EKGFormOutput:
@@ -131,7 +131,7 @@ def process_ekg_image(
     selected_rhythm = rhythm_map[rhythm]
     rp_at_right = reference_pulse == "Right"
     cabrera = ekg_format == "Cabrera"
-    scaling_factor = scaling_factor
+    scaling_factor = int(scaling_factor)
     
     # Initialize the Digitizer with dynamic options
     digitizer = Digitizer(
