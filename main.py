@@ -3,14 +3,12 @@ from fastapi import FastAPI, Request, Form, HTTPException, UploadFile, File
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, HttpUrl
-# import pandas as pd
-# import numpy as np
-# from PIL import Image
-# from digitization.StreamingDigitizer import Digitizer
-# from utils.ecg.Lead import Lead
-# from tensorflow.keras.models import load_model
-
-# import io
+import pandas as pd
+import numpy as np
+from PIL import Image
+from digitization.StreamingDigitizer import Digitizer
+from utils.ecg.Lead import Lead
+from tensorflow.keras.models import load_model
 
 app = FastAPI(
     title="EKG Digitizer and Interpreter",
@@ -68,13 +66,13 @@ class EKGFormInput(BaseModel):
         gt=0,
     )
 
-    demo_image: Literal["Demo"] = Field(
-        default="Demo",
-        title="Image Upload",
-        examples=["Demo"],
-        description="""Image upload disabled for demo. For functionality testing by user please refer to the Community Application Library. 
-        **[EKG ](https://www.healthuniverse.com/apps/EKG%20Digitization%20and%20Interpretation)**""",
-    )
+    # demo_image: Literal["Demo"] = Field(
+    #     default="Demo",
+    #     title="Image Upload",
+    #     examples=["Demo"],
+    #     description="""Image upload disabled for demo. For functionality testing by user please refer to the Community Application Library. 
+    #     **[EKG ](https://www.healthuniverse.com/apps/EKG%20Digitization%20and%20Interpretation)**""",
+    # )
 
 class EKGFormOutput(BaseModel):
     """Form-based output schema for result from reading an EKG image."""
@@ -84,11 +82,7 @@ class EKGFormOutput(BaseModel):
         description="The prediction of the possible conditions.",
         format="display",
     )
-    example_image: HttpUrl = Field(
-        title="Example Image",
-        examples=["http://127.0.0.1:8000/download_demo_image"],
-        description="A link to download the example EKG image.",
-    )
+
     download_link: HttpUrl = Field(
         title="Download Link",
         examples=["http://127.0.0.1:8000/download_processed_image"],
@@ -101,10 +95,6 @@ class EKGFormOutput(BaseModel):
     summary="Process EKG Image",
     description="Digitize EKG image, extract signals, and provide predictions for potential diagnoses.",
 )
-
-# DEMO_IMAGE = "example_1.png"
-# PROCESSED_DEMO_IMAGE = "processed_ecg_1.png"
-# DEMO_PREDICTION = "Prediction: Possible Left bundle branch block (LBBB)"
 
 def process_ekg_image(
     data: Annotated[EKGFormInput, Form()],
@@ -194,24 +184,14 @@ def process_ekg_image(
         prediction = f"### **Prediction: Likely {likely_labels[0][0]}**"
     else:
         prediction = f"### **Prediction: Possible {max_label}**"
-
-    return EKGFormOutput(
-        prediction=prediction,
-        download_link="/download_processed_image",
-    )
     
     base_url = request.base_url
     return EKGFormOutput(
-        prediction="Prediction: Possible Left bundle branch block (LBBB)",
-        example_image=str(base_url) + "download_demo_image",
+        prediction=prediction,
         download_link=str(base_url) + "download_processed_image",
     )
 
-@app.get("/download_demo_image", summary="Download Demo ECG Image")
-async def download_demo_image():
-    """Serve the demo ECG image for download."""
-    return FileResponse("data/example_1.png", media_type="image/png", filename="example_1.png")
 @app.get("/download_processed_image", summary="Download Processed ECG Image")
 async def download_processed_image():
     """Serve the processed ECG image for download."""
-    return FileResponse("data/processed_ecg_1.png", media_type="image/png", filename="processed_ecg_1.png")
+    return FileResponse("data/processed_ecg.png", media_type="image/png", filename="processed_ecg.png")
