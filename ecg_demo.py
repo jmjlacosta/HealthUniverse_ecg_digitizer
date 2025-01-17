@@ -2,7 +2,7 @@ from typing import Annotated, Literal
 from fastapi import FastAPI, Request, Form, HTTPException, UploadFile, File
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, HttpUrl
 # import pandas as pd
 # import numpy as np
 # from PIL import Image
@@ -84,14 +84,14 @@ class EKGFormOutput(BaseModel):
         description="The prediction of the possible conditions.",
         format="display",
     )
-    example_image: str = Field(
+    example_image: HttpUrl = Field(
         title="Example Image",
-        examples=["/download_demo_image"],
+        examples=["http://127.0.0.1:8000/download_demo_image"],
         description="A link to download the example EKG image.",
     )
-    download_link: str = Field(
+    download_link: HttpUrl = Field(
         title="Download Link",
-        examples=["/download_processed_image"],
+        examples=["http://127.0.0.1:8000/download_processed_image"],
         description="A link to download the processed EKG image.",
     )
 
