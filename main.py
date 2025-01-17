@@ -95,11 +95,11 @@ class EKGFormOutput(BaseModel):
 # ) -> EKGFormOutput:
 
 def process_ekg_image(
-    rhythm: Annotated[str, Form(default="Lead II")],
-    reference_pulse: Annotated[str, Form(default="Left")],
-    ekg_format: Annotated[str, Form(default="Standard")],
-    force_second_contour: Annotated[bool, Form(default=False)],
-    scaling_factor: Annotated[float, Form(default=10.0)],
+    rhythm: Annotated[str, Form()],
+    reference_pulse: Annotated[str, Form()],
+    ekg_format: Annotated[str, Form()],
+    force_second_contour: Annotated[bool, Form()],
+    scaling_factor: Annotated[int, Form()],
     image: Annotated[UploadFile, File()],
     request: Request,
 ) -> EKGFormOutput:
