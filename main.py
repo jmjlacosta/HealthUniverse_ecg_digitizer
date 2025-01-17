@@ -11,7 +11,7 @@ from utils.ecg.Lead import Lead
 from tensorflow.keras.models import load_model
 
 app = FastAPI(
-    title="EKG Digitizer and Interpreter",
+    title="EKG Analysis Tool",
     description="""This tool digitizes EKG images, extracts signals, and provides predictions for potential diagnoses.  
 It builds on established methods for automated EKG interpretation. For more information, refer to:  
 - **[Automated detection of cardiac arrhythmias using deep neural networks](https://www.sciencedirect.com/science/article/pii/S016926072400049X)**, published in *Computers in Biology and Medicine*.  
