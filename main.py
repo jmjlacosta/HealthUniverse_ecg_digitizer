@@ -1,4 +1,4 @@
-from typing import Annotated, Literal
+from typing import Annotated, Literal, Optional
 from fastapi import FastAPI, Request, Form, HTTPException, UploadFile, File
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -99,7 +99,7 @@ class EKGFormOutput(BaseModel):
 def process_ekg_image(
     data: Annotated[EKGFormInput, Form()],
     request: Request,
-    image: Annotated[UploadFile, File(title="File", default=None)],
+    image: Optional[Annotated[UploadFile, File(title="File")]] = None,
 ) -> EKGFormOutput:
     """Digitize EKG image, extract signals, and provide predictions for potential diagnoses.
 
