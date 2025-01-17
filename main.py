@@ -88,12 +88,6 @@ class EKGFormOutput(BaseModel):
     description="Digitize EKG image, extract signals, and provide predictions for potential diagnoses.",
 )
 
-# def process_ekg_image(
-#     data: Annotated[EKGFormInput, Form()],
-#     image: Annotated[UploadFile, File(title="File")],
-#     request: Request,
-# ) -> EKGFormOutput:
-
 def process_ekg_image(
     rhythm: Annotated[str, Form()],
     reference_pulse: Annotated[str, Form()],
@@ -111,7 +105,6 @@ def process_ekg_image(
     Returns:
         EKGFormOutput: prediction on digitized EKG and interpretation
     """
-    # image = None
     # If no image is uploaded, use the default 'example.png' from the 'data/' folder
     if not image:
         file_location = "data/example.png"
@@ -171,10 +164,6 @@ def process_ekg_image(
     
     output_image_path = "data/processed_ecg.png"
     ecg.save(output_image_path)
-    # if ecg.dtype != np.uint8:
-    #     ecg = (255 * (ecg / np.max(ecg))).astype(np.uint8)
-    # pil_image = Image.fromarray(ecg, mode="L" if len(ecg.shape) == 2 else "RGB")
-    # pil_image.save(output_image_path)
     
     # Display predictions
     predictions = [(labels[i], preds[0][i]) for i in range(len(labels))]
