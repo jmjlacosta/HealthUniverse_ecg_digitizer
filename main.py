@@ -146,7 +146,7 @@ def process_ekg_image(
     rp_at_right = reference_pulse == "Right"
     cabrera = ekg_format == "Cabrera"
     scaling_factor = int(scaling_factor)
-    if force_second_contour.isin(["True", "true"]):
+    if force_second_contour in ["True", "true"]:
         second_contour = True
     else:
         second_contour = False
