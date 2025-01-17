@@ -58,12 +58,19 @@ class EKGFormInput(BaseModel):
         description="Sometimes the EKG detenction doesn't work. This allows for a quick way to re-try.",
     )
 
-    scaling_factor: float = Field(
-        default=10,
+    # scaling_factor: float = Field(
+    #     default=10,
+    #     title="Scaling Factor",
+    #     examples=[10],
+    #     description="The prediction model expects the EKG values to be on a scale of 100 µV per mm. For a standard 10 mm/mV EKG, we need to divide the values by 10 to match the expected scale.",
+    #     gt=0,
+    # )
+
+    scaling_factor: str = Field(
+        default="10",
         title="Scaling Factor",
-        examples=[10],
+        examples=["10"],
         description="The prediction model expects the EKG values to be on a scale of 100 µV per mm. For a standard 10 mm/mV EKG, we need to divide the values by 10 to match the expected scale.",
-        gt=0,
     )
 
 class EKGFormOutput(BaseModel):
@@ -131,7 +138,7 @@ def process_ekg_image(
     selected_rhythm = rhythm_map[rhythm]
     rp_at_right = reference_pulse == "Right"
     cabrera = ekg_format == "Cabrera"
-    scaling_factor = int(scaling_factor)
+    scaling_factor = float(scaling_factor)
     
     # Initialize the Digitizer with dynamic options
     digitizer = Digitizer(
