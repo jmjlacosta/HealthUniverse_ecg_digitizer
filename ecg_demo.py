@@ -1,5 +1,5 @@
 from typing import Annotated, Literal
-from fastapi import FastAPI, Form, HTTPException, UploadFile, File
+from fastapi import FastAPI, Request, Form, HTTPException, UploadFile, File
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
@@ -199,11 +199,11 @@ def process_ekg_image(
     #     download_link="/download_processed_image",
     # )
     
-    
+    base_url = request.base_url
     return EKGFormOutput(
         prediction="Prediction: Possible Left bundle branch block (LBBB)",
-        example_image="/download_demo_image",
-        download_link="/download_processed_image",
+        example_image=str(base_url) + "download_demo_image",
+        download_link=str(base_url) + "download_processed_image",
     )
 
 @app.get("/download_demo_image", summary="Download Demo ECG Image")
