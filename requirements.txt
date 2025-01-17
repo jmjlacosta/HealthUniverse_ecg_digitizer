@@ -4,9 +4,9 @@ uvicorn>=0.31.1
 numpy==1.23.5
 opencv_python==4.10.0.84
 pandas==2.2.3
+pdf2image==1.17.0
 Pillow==11.0.0
 pytesseract==0.3.13
-opencv-python==4.10.0.84
 scipy==1.14.1
 tensorflow==2.8.0
 tensorflow_cpu==2.8.0
