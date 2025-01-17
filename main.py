@@ -66,14 +66,6 @@ class EKGFormInput(BaseModel):
         gt=0,
     )
 
-    # demo_image: Literal["Demo"] = Field(
-    #     default="Demo",
-    #     title="Image Upload",
-    #     examples=["Demo"],
-    #     description="""Image upload disabled for demo. For functionality testing by user please refer to the Community Application Library. 
-    #     **[EKG ](https://www.healthuniverse.com/apps/EKG%20Digitization%20and%20Interpretation)**""",
-    # )
-
 class EKGFormOutput(BaseModel):
     """Form-based output schema for result from reading an EKG image."""
     prediction: str = Field(
@@ -96,9 +88,19 @@ class EKGFormOutput(BaseModel):
     description="Digitize EKG image, extract signals, and provide predictions for potential diagnoses.",
 )
 
+# def process_ekg_image(
+#     data: Annotated[EKGFormInput, Form()],
+#     image: Annotated[UploadFile, File(title="File")],
+#     request: Request,
+# ) -> EKGFormOutput:
+
 def process_ekg_image(
-    data: Annotated[EKGFormInput, Form()],
-    image: Annotated[UploadFile, File(title="File")],
+    rhythm: Annotated[str, Form(default="Lead II")],
+    reference_pulse: Annotated[str, Form(default="Left")],
+    ekg_format: Annotated[str, Form(default="Standard")],
+    force_second_contour: Annotated[bool, Form(default=False)],
+    scaling_factor: Annotated[float, Form(default=10.0)],
+    image: Annotated[UploadFile, File()],
     request: Request,
 ) -> EKGFormOutput:
     """Digitize EKG image, extract signals, and provide predictions for potential diagnoses.
@@ -109,7 +111,7 @@ def process_ekg_image(
     Returns:
         EKGFormOutput: prediction on digitized EKG and interpretation
     """
-    image = None
+    # image = None
     # If no image is uploaded, use the default 'example.png' from the 'data/' folder
     if not image:
         file_location = "data/example.png"
@@ -133,10 +135,10 @@ def process_ekg_image(
     
     # Map rhythm selection to Lead enum
     rhythm_map = {"Lead I": Lead.I, "Lead II": Lead.II, "Lead III": Lead.III}
-    selected_rhythm = rhythm_map[data.rhythm]
-    rp_at_right = data.reference_pulse == "Right"
-    cabrera = data.ekg_format == "Cabrera"
-    scaling_factor = data.scaling_factor
+    selected_rhythm = rhythm_map[rhythm]
+    rp_at_right = reference_pulse == "Right"
+    cabrera = ekg_format == "Cabrera"
+    scaling_factor = scaling_factor
     
     # Initialize the Digitizer with dynamic options
     digitizer = Digitizer(
@@ -149,7 +151,7 @@ def process_ekg_image(
         interpolation=16384
     )
     
-    ecg, data = digitizer.digitize(file_location, return_values=True, force_second_contour=data.force_second_contour)
+    ecg, data = digitizer.digitize(file_location, return_values=True, force_second_contour=force_second_contour)
     
     # Preprocess data
     data_I = data['I'].iloc[:4096].reset_index(drop=True)
