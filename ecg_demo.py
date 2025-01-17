@@ -84,6 +84,11 @@ class EKGFormOutput(BaseModel):
         description="The prediction of the possible conditions.",
         format="display",
     )
+    example_image: str = Field(
+        title="Example Image",
+        examples=["/download_demo_image"],
+        description="A link to download the example EKG image.",
+    )
     download_link: str = Field(
         title="Download Link",
         examples=["/download_processed_image"],
@@ -97,9 +102,13 @@ class EKGFormOutput(BaseModel):
     description="Digitize EKG image, extract signals, and provide predictions for potential diagnoses.",
 )
 
+DEMO_IMAGE = "example_1.png"
+PROCESSED_DEMO_IMAGE = "processed_ecg_1.png"
+DEMO_PREDICTION = "Prediction: Possible Left bundle branch block (LBBB)"
+
 def process_ekg_image(
     data: Annotated[EKGFormInput, Form()],
-    # image: Annotated[UploadFile, File(title="File")],
+    image: Annotated[UploadFile, File(title="File")],
 ) -> EKGFormOutput:
     """Digitize EKG image, extract signals, and provide predictions for potential diagnoses.
 
@@ -189,12 +198,19 @@ def process_ekg_image(
     #     prediction=prediction,
     #     download_link="/download_processed_image",
     # )
+    
+    
     return EKGFormOutput(
-        prediction=prediction,
+        prediction=DEMO_PREDICTION,
+        example_image="/download_demo_image",
         download_link="/download_processed_image",
     )
 
+@app.get("/download_demo_image", summary="Download Demo ECG Image")
+async def download_demo_image():
+    """Serve the demo ECG image for download."""
+    return FileResponse(f"data/{DEMO_IMAGE}", media_type="image/png", filename=DEMO_IMAGE)
 @app.get("/download_processed_image", summary="Download Processed ECG Image")
 async def download_processed_image():
     """Serve the processed ECG image for download."""
-    return FileResponse("data/processed_ecg.png", media_type="image/png", filename="processed_ecg.png")
+    return FileResponse(f"data/{PROCESSED_DEMO_IMAGE}", media_type="image/png", filename=PROCESSED_DEMO_IMAGE)
