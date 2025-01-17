@@ -2,7 +2,7 @@ from typing import Annotated, Literal
 from fastapi import FastAPI, Form, HTTPException, UploadFile, File
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
-# from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field
 # import pandas as pd
 # import numpy as np
 # from PIL import Image
