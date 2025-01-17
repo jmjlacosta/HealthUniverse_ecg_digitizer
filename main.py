@@ -51,10 +51,17 @@ class EKGFormInput(BaseModel):
         description="The EKG format refers to the arrangement of the 12 leads used to record the heart's electrical activity, with the standard format placing limb leads (I, II, III, aVR, aVL, aVF) and precordial leads (V1–V6) in a specific order. The Cabrera format rearranges the limb leads into a sequential anatomical order (aVL, I, -aVR, II, aVF, III) to emphasize the heart's electrical axis and facilitate the identification of conduction abnormalities.",
     )
 
-    force_second_contour: bool = Field(
-        default=False,
+    # force_second_contour: bool = Field(
+    #     default=False,
+    #     title="Force to Re-Contour",
+    #     examples=[False],
+    #     description="Sometimes the EKG detenction doesn't work. This allows for a quick way to re-try.",
+    # )
+
+    force_second_contour: str = Field(
+        default="False",
         title="Force to Re-Contour",
-        examples=[False],
+        examples=["False"],
         description="Sometimes the EKG detenction doesn't work. This allows for a quick way to re-try.",
     )
 
@@ -99,7 +106,7 @@ def process_ekg_image(
     rhythm: Annotated[str, Form()],
     reference_pulse: Annotated[str, Form()],
     ekg_format: Annotated[str, Form()],
-    force_second_contour: Annotated[bool, Form()],
+    force_second_contour: Annotated[str, Form()],
     scaling_factor: Annotated[str, Form()],
     image: Annotated[UploadFile, File()],
     request: Request,
@@ -138,7 +145,11 @@ def process_ekg_image(
     selected_rhythm = rhythm_map[rhythm]
     rp_at_right = reference_pulse == "Right"
     cabrera = ekg_format == "Cabrera"
-    scaling_factor = float(scaling_factor)
+    scaling_factor = int(scaling_factor)
+    if force_second_contour.isin(["True", "true"]):
+        second_contour = True
+    else:
+        second_contour = False
     
     # Initialize the Digitizer with dynamic options
     digitizer = Digitizer(
@@ -151,7 +162,7 @@ def process_ekg_image(
         interpolation=16384
     )
     
-    ecg, data = digitizer.digitize(file_location, return_values=True, force_second_contour=force_second_contour)
+    ecg, data = digitizer.digitize(file_location, return_values=True, force_second_contour=second_contour)
     
     # Preprocess data
     data_I = data['I'].iloc[:4096].reset_index(drop=True)
