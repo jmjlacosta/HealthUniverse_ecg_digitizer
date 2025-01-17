@@ -108,6 +108,7 @@ class EKGFormOutput(BaseModel):
 
 def process_ekg_image(
     data: Annotated[EKGFormInput, Form()],
+    request: Request,
     # image: Annotated[UploadFile, File(title="File")],
 ) -> EKGFormOutput:
     """Digitize EKG image, extract signals, and provide predictions for potential diagnoses.
