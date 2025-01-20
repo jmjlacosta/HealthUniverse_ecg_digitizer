@@ -204,7 +204,7 @@ def process_ekg_image(
     return EKGFormOutput(
         prediction=prediction,
         download_link=str(base_url) + "download_processed_image",
-        navigator_behavior="Result to be summarized not interpreted by LLM",
+        navigator_behavior="Describe results and provide definitions of all specified conditions.",
     )
 
 @app.get("/download_processed_image", summary="Download Processed ECG Image")
