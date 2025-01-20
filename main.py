@@ -95,11 +95,11 @@ class EKGFormOutput(BaseModel):
         description="A link to download the processed EKG image.",
     )
 
-    navigator_behavior: str = Field(
-        title="Response Behavior",
-        examples=["Result to be summarized not interpreted by LLM"],
-        description="Navigator behavior",
-    )
+    # navigator_behavior: str = Field(
+    #     title="Response Behavior",
+    #     examples=["Result to be summarized not interpreted by LLM"],
+    #     description="Navigator behavior",
+    # )
 
 @app.post(
     "/process_ekg_image/",
@@ -204,7 +204,7 @@ def process_ekg_image(
     return EKGFormOutput(
         prediction=prediction,
         download_link=str(base_url) + "download_processed_image",
-        navigator_behavior="Describe results and provide definitions of all specified conditions.",
+        # navigator_behavior="Describe results and provide definitions of all specified conditions.",
     )
 
 @app.get("/download_processed_image", summary="Download Processed ECG Image")
