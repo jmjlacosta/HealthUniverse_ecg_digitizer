@@ -104,7 +104,7 @@ def process_ekg_image(
     image = None
     # If no image is uploaded, use the default 'example.png' from the 'data/' folder
     if not image:
-        file_location = "data/example.png"
+        file_location = "data/example_1.png"
     else:
         file_location = f"data/{image.filename}"
         with open(file_location, "wb") as f:
@@ -159,7 +159,7 @@ def process_ekg_image(
     model_input = np.nan_to_num(model_input)
     preds = model.predict(model_input)
 
-    output_image_path = "data/processed_ecg.png"
+    output_image_path = "data/processed_ecg_1.png"
     ecg.save(output_image_path)
     # if ecg.dtype != np.uint8:
     #     ecg = (255 * (ecg / np.max(ecg))).astype(np.uint8)
