@@ -68,7 +68,12 @@ class EKGFormInput(BaseModel):
         gt=0,
     )
 
-    image_upload: Annotated[UploadFile | None, File()] = None
+    image_upload: Literal["Example Image I", "Example Image II"] = Field(
+        default="Example Image I",
+        title="Example Image",
+        examples=["Example Image I"],
+        description="Example EKG to use for Demo.",
+    )
 
 class EKGFormOutput(BaseModel):
     """Form-based output schema for result from reading an EKG image."""
@@ -78,11 +83,18 @@ class EKGFormOutput(BaseModel):
         description="The prediction of the possible conditions.",
         format="display",
     )
-    download_link: str = Field(
+
+    download_link: HttpUrl = Field(
         title="Download Link",
-        examples=["/download_processed_image"],
+        examples=["http://127.0.0.1:8000/download_processed_image"],
         description="A link to download the processed EKG image.",
     )
+
+    # navigator_behavior: str = Field(
+    #     title="Response Behavior",
+    #     examples=["Result to be summarized not interpreted by LLM"],
+    #     description="Navigator behavior",
+    # )
 
 @app.post(
     "/process_ekg_image/",
@@ -105,13 +117,18 @@ def process_ekg_image(
     """
     image = None
     # If no image is uploaded, use the default 'example.png' from the 'data/' folder
-    if not image:
-        file_location = "data/example_1.png"
-    else:
-        file_location = f"data/{image.filename}"
-        with open(file_location, "wb") as f:
-            f.write(image.file.read())  # Save the uploaded image to the 'data' directory
+    # if not image:
+    #     file_location = "data/example_1.png"
+    # else:
+    #     file_location = f"data/{image.filename}"
+    #     with open(file_location, "wb") as f:
+    #         f.write(image.file.read())  # Save the uploaded image to the 'data' directory
 
+    if data.image_upload == "Example Image I":
+        file_location = "data/example_2.png"
+    else:
+        file_location = "data/example_1.png"
+        
     # Load the pre-trained model
     model = load_model('model.hdf5')
     
@@ -161,7 +178,7 @@ def process_ekg_image(
     model_input = np.nan_to_num(model_input)
     preds = model.predict(model_input)
 
-    output_image_path = "data/processed_ecg_1.png"
+    output_image_path = "data/processed_ecg.png"
     ecg.save(output_image_path)
     # if ecg.dtype != np.uint8:
     #     ecg = (255 * (ecg / np.max(ecg))).astype(np.uint8)
@@ -179,9 +196,11 @@ def process_ekg_image(
     else:
         prediction = f"### **Prediction: Possible {max_label}**"
 
+    base_url = request.base_url
     return EKGFormOutput(
         prediction=prediction,
-        download_link="/download_processed_image",
+        download_link=str(base_url) + "download_processed_image",
+        # navigator_behavior="Describe results and provide definitions of all specified conditions.",
     )
 
 @app.get("/download_processed_image", summary="Download Processed ECG Image")
