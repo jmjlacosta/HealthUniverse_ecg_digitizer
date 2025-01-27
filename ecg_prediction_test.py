@@ -68,6 +68,8 @@ class EKGFormInput(BaseModel):
         gt=0,
     )
 
+    image_upload: Annotated[UploadFile | None, File()] = None
+
 class EKGFormOutput(BaseModel):
     """Form-based output schema for result from reading an EKG image."""
     prediction: str = Field(
