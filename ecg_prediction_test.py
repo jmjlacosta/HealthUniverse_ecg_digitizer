@@ -106,6 +106,7 @@ class EKGFormOutput(BaseModel):
 def process_ekg_image(
     data: Annotated[EKGFormInput, Form()],
     # image: Annotated[UploadFile, File(title="File")],
+    request: Request,
 ) -> EKGFormOutput:
     """Digitize EKG image, extract signals, and provide predictions for potential diagnoses.
 
@@ -125,9 +126,9 @@ def process_ekg_image(
     #         f.write(image.file.read())  # Save the uploaded image to the 'data' directory
 
     if data.image_upload == "Example Image I":
-        file_location = "data/example_2.png"
-    else:
         file_location = "data/example_1.png"
+    else:
+        file_location = "data/example_2.png"
         
     # Load the pre-trained model
     model = load_model('model.hdf5')
