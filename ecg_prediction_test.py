@@ -1,8 +1,8 @@
-from typing import Annotated, Literal
-from fastapi import FastAPI, Form, HTTPException, UploadFile, File
+from typing import Annotated, Literal, Optional
+from fastapi import FastAPI, Request, Form, HTTPException, UploadFile, File
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, HttpUrl
 import pandas as pd
 import numpy as np
 from PIL import Image
