@@ -1,14 +1,14 @@
-from typing import Annotated, Literal, Optional
 from fastapi import FastAPI, Request, Form, HTTPException, UploadFile, File
-from fastapi.responses import FileResponse
+from digitization.StreamingDigitizer import Digitizer
 from fastapi.middleware.cors import CORSMiddleware
+from typing import Annotated, Literal, Optional
+from tensorflow.keras.models import load_model
 from pydantic import BaseModel, Field, HttpUrl
+from fastapi.responses import FileResponse
+from utils.ecg.Lead import Lead
+from PIL import Image
 import pandas as pd
 import numpy as np
-from PIL import Image
-from digitization.StreamingDigitizer import Digitizer
-from utils.ecg.Lead import Lead
-from tensorflow.keras.models import load_model
 
 app = FastAPI(
     title="EKG Digitizer and Interpreter",
@@ -54,7 +54,7 @@ class EKGFormInput(BaseModel):
     force_second_contour: bool = Field(
         default=False,
         title="Force to Re-Contour",
-        examples=[True],
+        examples=[False],
         description="Sometimes the EKG detenction doesn't work. This allows for a quick way to re-try.",
     )
 
