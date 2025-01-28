@@ -10,8 +10,6 @@ from digitization.StreamingDigitizer import Digitizer
 from utils.ecg.Lead import Lead
 from tensorflow.keras.models import load_model
 
-# import io
-
 app = FastAPI(
     title="EKG Digitizer and Interpreter",
     description="""This tool digitizes EKG images, extracts signals, and provides predictions for potential diagnoses.  
@@ -90,11 +88,6 @@ class EKGFormOutput(BaseModel):
         description="A link to download the processed EKG image.",
     )
 
-    # navigator_behavior: str = Field(
-    #     title="Response Behavior",
-    #     examples=["Result to be summarized not interpreted by LLM"],
-    #     description="Navigator behavior",
-    # )
 
 @app.post(
     "/process_ekg_image/",
@@ -105,7 +98,6 @@ class EKGFormOutput(BaseModel):
 
 def process_ekg_image(
     data: Annotated[EKGFormInput, Form()],
-    # image: Annotated[UploadFile, File(title="File")],
     request: Request,
 ) -> EKGFormOutput:
     """Digitize EKG image, extract signals, and provide predictions for potential diagnoses.
@@ -117,13 +109,6 @@ def process_ekg_image(
         EKGFormOutput: prediction on digitized EKG and interpretation
     """
     image = None
-    # If no image is uploaded, use the default 'example.png' from the 'data/' folder
-    # if not image:
-    #     file_location = "data/example_1.png"
-    # else:
-    #     file_location = f"data/{image.filename}"
-    #     with open(file_location, "wb") as f:
-    #         f.write(image.file.read())  # Save the uploaded image to the 'data' directory
 
     if data.image_upload == "Example Image I":
         file_location = "data/example_1.png"
@@ -201,7 +186,6 @@ def process_ekg_image(
     return EKGFormOutput(
         prediction=prediction,
         download_link=str(base_url) + "download_processed_image",
-        # navigator_behavior="Describe results and provide definitions of all specified conditions.",
     )
 
 @app.get("/download_processed_image", summary="Download Processed ECG Image")
