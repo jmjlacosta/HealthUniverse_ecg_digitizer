@@ -11,8 +11,8 @@ import pandas as pd
 import numpy as np
 
 app = FastAPI(
-    title="EKG Digitizer and Interpreter",
-    description="""This tool digitizes EKG images, extracts signals, and provides predictions for potential diagnoses.  
+    title="Demo - EKG Analysis Tool",
+    description="""This demo tool digitizes EKG images, extracts signals, and provides predictions for potential diagnoses.  
 It builds on established methods for automated EKG interpretation. For more information, refer to:  
 - **[Automated detection of cardiac arrhythmias using deep neural networks](https://www.sciencedirect.com/science/article/pii/S016926072400049X)**, published in *Computers in Biology and Medicine*.  
 - **[Artificial intelligence-enhanced electrocardiography](https://www.nature.com/articles/s41467-020-15432-4)**, published in *Nature Communications*.""",

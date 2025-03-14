@@ -12,7 +12,7 @@ from tensorflow.keras.models import load_model
 
 app = FastAPI(
     title="EKG Analysis Tool",
-    description="""This tool digitizes EKG images, extracts signals, and provides predictions for potential diagnoses.  
+    description="""This demo tool digitizes EKG images, extracts signals, and provides predictions for potential diagnoses.  
 It builds on established methods for automated EKG interpretation. For more information, refer to:  
 - **[Automated detection of cardiac arrhythmias using deep neural networks](https://www.sciencedirect.com/science/article/pii/S016926072400049X)**, published in *Computers in Biology and Medicine*.  
 - **[Artificial intelligence-enhanced electrocardiography](https://www.nature.com/articles/s41467-020-15432-4)**, published in *Nature Communications*.""",
@@ -58,27 +58,27 @@ class EKGFormInput(BaseModel):
     #     description="Sometimes the EKG detenction doesn't work. This allows for a quick way to re-try.",
     # )
 
-    force_second_contour: str = Field(
+    force_second_contour: Literal["False", "True"] = Field(
         default="False",
-        title="Force to Re-Contour",
+        title="Force to re-contour Pulse",
         examples=["False"],
         description="Sometimes the EKG detenction doesn't work. This allows for a quick way to re-try.",
     )
 
-    # scaling_factor: float = Field(
-    #     default=10,
-    #     title="Scaling Factor",
-    #     examples=[10],
-    #     description="The prediction model expects the EKG values to be on a scale of 100 µV per mm. For a standard 10 mm/mV EKG, we need to divide the values by 10 to match the expected scale.",
-    #     gt=0,
-    # )
-
-    scaling_factor: str = Field(
-        default="10",
+    scaling_factor: float = Field(
+        default=10,
         title="Scaling Factor",
-        examples=["10"],
+        examples=[10],
         description="The prediction model expects the EKG values to be on a scale of 100 µV per mm. For a standard 10 mm/mV EKG, we need to divide the values by 10 to match the expected scale.",
+        gt=0,
     )
+
+    # scaling_factor: str = Field(
+    #     default="10",
+    #     title="Scaling Factor",
+    #     examples=["10"],
+    #     description="The prediction model expects the EKG values to be on a scale of 100 µV per mm. For a standard 10 mm/mV EKG, we need to divide the values by 10 to match the expected scale.",
+    # )
 
 class EKGFormOutput(BaseModel):
     """Form-based output schema for result from reading an EKG image."""
@@ -109,11 +109,7 @@ class EKGFormOutput(BaseModel):
 )
 
 def process_ekg_image(
-    rhythm: Annotated[str, Form()],
-    reference_pulse: Annotated[str, Form()],
-    ekg_format: Annotated[str, Form()],
-    force_second_contour: Annotated[str, Form()],
-    scaling_factor: Annotated[str, Form()],
+    data: Annotated[EKGFormInput, Form()],
     image: Annotated[UploadFile, File()],
     request: Request,
 ) -> EKGFormOutput:
@@ -148,14 +144,11 @@ def process_ekg_image(
     
     # Map rhythm selection to Lead enum
     rhythm_map = {"Lead I": Lead.I, "Lead II": Lead.II, "Lead III": Lead.III}
-    selected_rhythm = rhythm_map[rhythm]
-    rp_at_right = reference_pulse == "Right"
-    cabrera = ekg_format == "Cabrera"
-    scaling_factor = int(scaling_factor)
-    if force_second_contour in ["True", "true"]:
-        second_contour = True
-    else:
-        second_contour = False
+    selected_rhythm = rhythm_map[data.rhythm]
+    rp_at_right = data.reference_pulse == "Right"
+    cabrera = data.ekg_format == "Cabrera"
+    scaling_factor = int(data.scaling_factor)
+    second_contour = data.force_second_contour == "True"
     
     # Initialize the Digitizer with dynamic options
     digitizer = Digitizer(
@@ -196,14 +189,14 @@ def process_ekg_image(
     
     # Highlight final prediction
     if likely_labels:
-        prediction = f"### **Prediction: Likely {likely_labels[0][0]}**"
+        prediction = f"Prediction: Likely {likely_labels[0][0]}"
     else:
-        prediction = f"### **Prediction: Possible {max_label}**"
+        prediction = f"Prediction: Possible {max_label}"
     
     base_url = request.base_url
     return EKGFormOutput(
         prediction=prediction,
-        download_link=str(base_url) + "download_processed_image",
+        download_link="Display this image as Markdown " + str(base_url) + "download_processed_image",
         # navigator_behavior="Describe results and provide definitions of all specified conditions.",
     )
 
