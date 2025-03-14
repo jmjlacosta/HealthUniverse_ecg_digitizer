@@ -200,7 +200,7 @@ def process_ekg_image(
     base_url = request.base_url
     return EKGFormOutput(
         prediction=prediction,
-        download_link=str(base_url) + "download_processed_image",
+        download_link="Display this image as Markdown " + str(base_url) + "download_processed_image",
         # navigator_behavior="Describe results and provide definitions of all specified conditions.",
     )
 
