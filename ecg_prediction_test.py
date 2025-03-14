@@ -82,10 +82,10 @@ class EKGFormOutput(BaseModel):
         format="display",
     )
 
-    download_link: HttpUrl = Field(
+    download_link: str = Field(
         title="Download Link",
-        examples=["http://127.0.0.1:8000/download_processed_image"],
-        description="A link to download the processed EKG image.",
+        examples=["Display this image as Markdown http://127.0.0.1:8000/download_processed_image"],
+        description="The image and a link to download the processed EKG image.",
     )
 
 
