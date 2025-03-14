@@ -146,7 +146,7 @@ def process_ekg_image(
         interpolation=16384
     )
 
-    second_contour = force_second_contour == "True"
+    second_contour = data.force_second_contour == "True"
 
     ecg, data = digitizer.digitize(file_location, return_values=True, force_second_contour=second_contour)
 
