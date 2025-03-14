@@ -51,10 +51,10 @@ class EKGFormInput(BaseModel):
         description="The EKG format refers to the arrangement of the 12 leads used to record the heart's electrical activity, with the standard format placing limb leads (I, II, III, aVR, aVL, aVF) and precordial leads (V1–V6) in a specific order. The Cabrera format rearranges the limb leads into a sequential anatomical order (aVL, I, -aVR, II, aVF, III) to emphasize the heart's electrical axis and facilitate the identification of conduction abnormalities.",
     )
 
-    force_second_contour: bool = Field(
-        default=False,
-        title="Force to Re-Contour",
-        examples=[False],
+    force_second_contour: Literal["False", "True"] = Field(
+        default="False",
+        title="Second Contour",
+        examples=["False"],
         description="Sometimes the EKG detenction doesn't work. This allows for a quick way to re-try.",
     )
 
@@ -146,7 +146,9 @@ def process_ekg_image(
         interpolation=16384
     )
 
-    ecg, data = digitizer.digitize(file_location, return_values=True, force_second_contour=data.force_second_contour)
+    second_contour = force_second_contour == "True"
+
+    ecg, data = digitizer.digitize(file_location, return_values=True, force_second_contour=second_contour)
 
     # Preprocess data
     data_I = data['I'].iloc[:4096].reset_index(drop=True)
