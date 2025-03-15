@@ -113,7 +113,7 @@ def process_ekg_image(
     reference_pulse: Annotated[Literal["Left", "Right"], Form(...)],
     ekg_format: Annotated[Literal["Standard", "Cabrera"], Form(...)],
     force_second_contour: Annotated[Literal["False", "True"], Form(...)],  # Boolean-like choices
-    scaling_factor: Annotated[str, Form()],
+    scaling_factor: Annotated[Literal["10", "0", "100", "-10", "-100"], Form(...)],
     image: Annotated[UploadFile, File()],
     request: Request,
 ) -> EKGFormOutput:
@@ -193,9 +193,9 @@ def process_ekg_image(
     
     # Highlight final prediction
     if likely_labels:
-        prediction = f"### **Prediction: Likely {likely_labels[0][0]}**"
+        prediction = f"Prediction: Likely {likely_labels[0][0]}"
     else:
-        prediction = f"### **Prediction: Possible {max_label}**"
+        prediction = f"Prediction: Possible {max_label}"
     
     base_url = request.base_url
     return EKGFormOutput(

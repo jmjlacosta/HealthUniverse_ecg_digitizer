@@ -180,9 +180,9 @@ def process_ekg_image(
 
     # Highlight final prediction
     if likely_labels:
-        prediction = f"### **Prediction: Likely {likely_labels[0][0]}**"
+        prediction = f"Prediction: Likely {likely_labels[0][0]}"
     else:
-        prediction = f"### **Prediction: Possible {max_label}**"
+        prediction = f"Prediction: Possible {max_label}"
 
     base_url = request.base_url
     return EKGFormOutput(
