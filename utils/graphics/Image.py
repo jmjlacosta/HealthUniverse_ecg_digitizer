@@ -299,3 +299,13 @@ class Image:
         elif self.is_RGB():
             self.__data = cv.cvtColor(self.__data, cv.COLOR_RGB2HSV)
         self.__color_space = ColorSpace.HSV
+
+    def png(self):
+        """
+        Get the image in PNG format.
+
+        Returns:
+            bytes: Image in PNG format.
+        """
+        _, buffer = cv.imencode(".png", self.__data)
+        return buffer.tobytes()

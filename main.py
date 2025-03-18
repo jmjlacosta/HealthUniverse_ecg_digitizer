@@ -1,3 +1,5 @@
+import base64
+import secrets
 from typing import Annotated, Literal, Optional
 from fastapi import FastAPI, Request, Form, HTTPException, UploadFile, File
 from fastapi.responses import FileResponse
@@ -89,10 +91,9 @@ class EKGFormOutput(BaseModel):
         format="display",
     )
 
-    download_link: str = Field(
-        title="Download Link",
-        examples=["Display this image as Markdown http://127.0.0.1:8000/download_processed_image"],
-        description="The image and a link to download the processed EKG image.",
+    processed_ekg_image_link: str = Field(
+        title="Processed EKG Image",
+        description="Link to the image of the processed EKG image.",
     )
 
     # navigator_behavior: str = Field(
@@ -182,8 +183,9 @@ def process_ekg_image(
     model_input = np.expand_dims(data_final.to_numpy(), axis=0)
     model_input = np.nan_to_num(model_input)
     preds = model.predict(model_input)
-    
-    output_image_path = "data/processed_ecg.png"
+
+    image_id = secrets.token_hex(16)
+    output_image_path = f"data/{image_id}.png"
     ecg.save(output_image_path)
     
     # Display predictions
@@ -200,11 +202,11 @@ def process_ekg_image(
     base_url = request.base_url
     return EKGFormOutput(
         prediction=prediction,
-        download_link="Display this image as Markdown " + str(base_url) + "download_processed_image",
+        processed_ekg_image_link=f"{base_url}download_processed_image/{image_id}",
         # navigator_behavior="Describe results and provide definitions of all specified conditions.",
     )
 
-@app.get("/download_processed_image", summary="Download Processed ECG Image")
-async def download_processed_image():
+@app.get("/download_processed_image/{image_id}", summary="Download Processed ECG Image")
+async def download_processed_image(image_id):
     """Serve the processed ECG image for download."""
-    return FileResponse("data/processed_ecg.png", media_type="image/png", filename="processed_ecg.png")
+    return FileResponse(f"data/{image_id}.png", media_type="image/png", filename="processed_ecg.png")
