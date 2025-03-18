@@ -116,7 +116,7 @@ def process_ekg_image(
     ekg_format: Annotated[Literal["Standard", "Cabrera"], Form(...)] = "Standard",
     force_second_contour: Annotated[Literal["False", "True"], Form(...)] = "False",  # Boolean-like choices
     scaling_factor: Annotated[Literal["0", "10", "-10", "100", "-100"], Form(...)] = "10",
-    rhythm: Annotated[Literal["Lead I", "Lead II", "Lead III", "Lead IV"], Form(...)] = "Lead II",
+    rhythm: Annotated[Literal["Lead I", "Lead II", "Lead III"], Form(...)] = "Lead II",
 ) -> EKGFormOutput:
     """Digitize EKG image, extract signals, and provide predictions for potential diagnoses.
 
