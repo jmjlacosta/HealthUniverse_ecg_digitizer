@@ -110,11 +110,11 @@ class EKGFormOutput(BaseModel):
 )
 
 def process_ekg_image(
-    rhythm: Annotated[Literal["Lead I", "Lead II", "Lead III", "Lead IV"], Form(...)] = "Lead II",  # Only allow these values
+    rhythm: Annotated[Literal["Lead I", "Lead II", "Lead III", "Lead IV"], Form(...)] = "Lead II",
     reference_pulse: Annotated[Literal["Left", "Right"], Form(...)] = "Left",
     ekg_format: Annotated[Literal["Standard", "Cabrera"], Form(...)] = "Standard",
-    force_second_contour: Annotated[Literal["False", "True"], Form(...)] = "False",  # Boolean-like choices
-    scaling_factor: Annotated[str, Form(...)] = "10",
+    force_second_contour: Annotated[Literal["False", "True"], Form(...)] = "False",
+    scaling_factor: Annotated[Literal["-100", "-10", "0", "10", "100"], Form(...)] = "10",
     image: Annotated[UploadFile, File()],
     request: Request,
 ) -> EKGFormOutput:
@@ -152,10 +152,7 @@ def process_ekg_image(
     selected_rhythm = rhythm_map[rhythm]
     rp_at_right = reference_pulse == "Right"
     cabrera = ekg_format == "Cabrera"
-    try:
-        scaling_factor = int(scaling_factor)
-    except:
-        scaling_factor = 10
+    scaling_factor = int(scaling_factor)
     second_contour = force_second_contour == "True"
     
     # Initialize the Digitizer with dynamic options
